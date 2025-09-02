@@ -141,28 +141,31 @@ app.get("/", (req, res) => res.send("Employee Attendance API is running 🚀"));
 // app.use("/api", adminRoutes);
 // app.use("/api", fileRoutes);   // ✅ serves /api/file/:id (GridFS)
 
-app.use("/api/auth", authRoutes);         // e.g. POST /api/auth/login
+/ =========================
+// API Routes
+// =========================
+app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/leave", leaveRoutes);
-app.use("/api/admin", adminRoutes);
 app.use("/api/file", fileRoutes);
+
+// =========================
+// Serve frontend
+// =========================
+const frontendPath = path.join(__dirname, "frontend", "dist");
+app.use(express.static(frontendPath));
+
+// React Router fallback
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(frontendPath, "index.html"));
+});
+
 
 // error handlers
 app.use(notFound);
 app.use(errorHandler);
 
-
-
-const frontendPath = path.join(__dirname, "frontend", "dist"); // if using Vite
-// const frontendPath = path.join(__dirname, "frontend", "build"); // if CRA
-
-// Serve static files
-app.use(express.static(frontendPath));
-
-// Fallback: send index.html for React Router routes
-app.get("*", (req, res) => {
-  res.sendFile(path.resolve(frontendPath, "index.html"));
-});
 
 const PORT = process.env.PORT || 2000;
 
